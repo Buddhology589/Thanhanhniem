@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kinh Thân Hành Niệm (Kayagatāsati Sutta)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals & Subtle Earth Tones -->
+    <!-- Application Structure Plan: Cấu trúc ứng dụng được thiết kế theo chủ đề để giúp người dùng dễ dàng tiếp cận và tiêu hóa nội dung giáo lý phức tạp. Thay vì trình bày tuyến tính theo văn bản gốc, ứng dụng chia nội dung thành các phần logic: 'Tổng Quan' để giới thiệu, 'Phương Pháp Tu Tập' với các thẻ tương tác để khám phá từng kỹ thuật, 'Lợi Ích & Kết Quả' sử dụng biểu đồ và thẻ để trực quan hóa thành quả, và 'So Sánh & Ẩn Dụ' để làm nổi bật các hình ảnh so sánh. Cấu trúc này cho phép người dùng tự do khám phá theo sự quan tâm, thúc đẩy sự hiểu biết sâu sắc và tương tác chủ động, thay vì chỉ đọc một cách thụ động. -->
+    <!-- Visualization & Content Choices: 
+        1.  Phương Pháp Tu Tập: Thông tin từ kinh về 6 phương pháp được chuyển thành một hệ thống thẻ tương tác (HTML/JS). Mục tiêu là tổ chức và đơn giản hóa một danh sách dài. Người dùng nhấp vào một thẻ để hiển thị nội dung chi tiết, giúp tập trung vào từng phương pháp một. Lựa chọn này hợp lý vì nó chia nhỏ thông tin phức tạp thành các phần dễ quản lý, cải thiện khả năng học và ghi nhớ.
+        2.  Lợi Ích & Kết Quả: Danh sách 10 lợi ích được trực quan hóa bằng biểu đồ cột ngang (Chart.js) và một lưới các thẻ. Mục tiêu là so sánh và trình bày sự tiến bộ. Biểu đồ cho thấy sự tăng dần của các thành quả, còn các thẻ cung cấp chi tiết. Tương tác qua tooltip trên biểu đồ. Lựa chọn này tốt hơn một danh sách tĩnh vì nó mang lại cảm giác về sự tăng trưởng và thành tựu, làm cho dữ liệu hấp dẫn hơn.
+        3.  Ẩn dụ: Các hình ảnh so sánh (đại dương, cái cây,...) được trình bày dưới dạng các thẻ riêng biệt với biểu tượng unicode (HTML/CSS). Mục tiêu là làm nổi bật các khái niệm triết học quan trọng. Lựa chọn này giúp các ẩn dụ này trở nên đáng nhớ và tách biệt khỏi phần hướng dẫn chính.
+        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fdfcf9;
+            color: #44403c;
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #c2410c;
+            border-bottom-color: #c2410c;
+        }
+        .method-card {
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+            border: 1px solid #d6d3d1;
+        }
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .method-card.active {
+            border-color: #ea580c;
+            background-color: #fff7ed;
+            color: #9a3412;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 500px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+        audio {
+            filter: sepia(20%) saturate(70%) grayscale(1) contrast(99%) brightness(90%);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-stone-800">
+
+    <header class="py-12 bg-orange-50 text-center">
+        <div class="container mx-auto px-4">
+            <h1 class="text-4xl md:text-5xl font-bold text-orange-900">Kinh Thân Hành Niệm</h1>
+            <p class="text-xl text-orange-800 mt-2">(Kayagatāsati Sutta)</p>
+            <p class="mt-4 max-w-3xl mx-auto text-stone-700 italic">"Thật vi diệu thay, chư Hiền giả! Thật hy hữu thay, chư Hiền giả! Thân hành niệm, khi được tu tập và làm cho sung mãn, có được quả lớn, có được công đức lớn, như đã được Thế Tôn... tuyên bố."</p>
+        </div>
+    </header>
+
+    <section id="audio-player" class="py-8 bg-orange-50 -mt-4">
+        <div class="container mx-auto px-4 text-center">
+            <h3 class="text-2xl font-bold text-orange-800 mb-4">Nghe Pháp Thoại</h3>
+            <div class="max-w-xl mx-auto bg-white p-4 rounded-full shadow-inner">
+                <!-- HƯỚNG DẪN: Hãy tải file MP3 của bạn lên cùng thư mục với file HTML này trên GitHub. -->
+                <!-- Sau đó, đảm bảo tên file trong thuộc tính 'src' dưới đây khớp chính xác với tên file MP3 của bạn. -->
+                <audio controls class="w-full">
+                    <source src="thanhanhniem.mp3" type="audio/mpeg">
+                    Trình duyệt của bạn không hỗ trợ phần tử âm thanh.
+                </audio>
+            </div>
+        </div>
+    </section>
+
+    <nav id="navbar" class="sticky top-0 bg-stone-50/95 backdrop-blur-sm shadow-md z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center items-center h-16">
+                <a href="#overview" class="nav-link text-stone-600 font-medium px-4 py-2 border-b-2 border-transparent">Tổng Quan</a>
+                <a href="#methods" class="nav-link text-stone-600 font-medium px-4 py-2 border-b-2 border-transparent">Phương Pháp Tu Tập</a>
+                <a href="#benefits" class="nav-link text-stone-600 font-medium px-4 py-2 border-b-2 border-transparent">Lợi Ích & Kết Quả</a>
+                <a href="#metaphors" class="nav-link text-stone-600 font-medium px-4 py-2 border-b-2 border-transparent">So Sánh & Ẩn Dụ</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-12">
+        <section id="overview" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center text-orange-800 mb-8">Tổng Quan về Kinh Thân Hành Niệm</h2>
+            <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-sm">
+                <p class="text-lg text-stone-700 leading-relaxed">
+                    Phần này giới thiệu bối cảnh và ý nghĩa cốt lõi của Kinh Thân Hành Niệm. Kinh bắt đầu với cuộc thảo luận của một nhóm Tỷ-kheo về những lợi ích to lớn của việc thực hành niệm thân, như đã được Đức Phật, bậc Giác Ngộ, tuyên thuyết. Đức Thế Tôn sau đó đã giải thích một cách chi tiết về cách tu tập và những thành quả vi diệu mà pháp môn này mang lại.
+                </p>
+                <p class="text-lg text-stone-700 leading-relaxed mt-4">
+                    Trọng tâm của kinh là <span class="font-bold text-orange-700">Thân Hành Niệm (Kayagatāsati)</span>, tức là sự chánh niệm, tỉnh giác liên tục về mọi hoạt động của thân thể. Đây không chỉ là một bài tập thiền định mà là một con đường tu tập toàn diện, khi được thực hành viên mãn, sẽ bao trùm tất cả các pháp thiện và dẫn đến sự giải thoát cuối cùng. Trang web này sẽ giúp bạn khám phá các phương pháp thực hành và những kết quả tuyệt vời của nó một cách có hệ thống.
+                </p>
+            </div>
+        </section>
+
+        <section id="methods" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center text-orange-800 mb-2">Phương Pháp Tu Tập</h2>
+            <p class="text-center text-stone-600 max-w-3xl mx-auto mb-8">
+                Phần này trình bày các phương pháp thực hành Thân Hành Niệm được Đức Phật chỉ dạy. Thay vì một danh sách dài, bạn có thể tương tác bằng cách nhấp vào từng thẻ bên dưới để khám phá chi tiết về mỗi phương pháp. Điều này giúp bạn tập trung và hiểu rõ từng bước trên con đường tu tập.
+            </p>
+            <div id="method-selector" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                <div data-target="method-breathing" class="method-card active cursor-pointer p-4 text-center rounded-lg bg-white shadow-sm">
+                    <div class="text-3xl mb-2">🌬️</div>
+                    <h3 class="font-bold">Hơi Thở</h3>
+                </div>
+                <div data-target="method-postures" class="method-card cursor-pointer p-4 text-center rounded-lg bg-white shadow-sm">
+                    <div class="text-3xl mb-2">🚶‍♂️</div>
+                    <h3 class="font-bold">Oai Nghi</h3>
+                </div>
+                <div data-target="method-clarity" class="method-card cursor-pointer p-4 text-center rounded-lg bg-white shadow-sm">
+                    <div class="text-3xl mb-2">🧠</div>
+                    <h3 class="font-bold">Tỉnh Giác</h3>
+                </div>
+                <div data-target="method-parts" class="method-card cursor-pointer p-4 text-center rounded-lg bg-white shadow-sm">
+                    <div class="text-3xl mb-2"> anatom️</div>
+                    <h3 class="font-bold">32 Thể Trược</h3>
+                </div>
+                <div data-target="method-elements" class="method-card cursor-pointer p-4 text-center rounded-lg bg-white shadow-sm">
+                    <div class="text-3xl mb-2">🌍💧🔥💨</div>
+                    <h3 class="font-bold">Tứ Đại</h3>
+                </div>
+                <div data-target="method-corpse" class="method-card cursor-pointer p-4 text-center rounded-lg bg-white shadow-sm">
+                    <div class="text-3xl mb-2">💀</div>
+                    <h3 class="font-bold">Quán Tử Thi</h3>
+                </div>
+            </div>
+
+            <div id="method-content-area" class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-sm min-h-[300px]">
+                <div id="method-breathing" class="method-content">
+                    <h3 class="text-2xl font-bold text-orange-800 mb-4">Quán Niệm Hơi Thở (Ānāpānasati)</h3>
+                    <p class="text-stone-700 leading-relaxed">Vị Tỷ-kheo đi đến khu rừng, hay gốc cây, hay một nơi vắng vẻ, ngồi kiết-già, lưng thẳng và an trú chánh niệm. Tỉnh giác, vị ấy thở vô; tỉnh giác, vị ấy thở ra. Thở vô dài, vị ấy biết: "Tôi thở vô dài". Thở ra dài, vị ấy biết: "Tôi thở ra dài". Thở vô ngắn, vị ấy biết: "Tôi thở vô ngắn". Thở ra ngắn, vị ấy biết: "Tôi thở ra ngắn". Vị ấy tập: "Cảm giác toàn thân, tôi sẽ thở vô". Vị ấy tập: "An tịnh thân hành, tôi sẽ thở vô; an tịnh thân hành, tôi sẽ thở ra".</p>
+                </div>
+                <div id="method-postures" class="method-content hidden">
+                    <h3 class="text-2xl font-bold text-orange-800 mb-4">Quán Niệm Oai Nghi (Iriyāpatha)</h3>
+                    <p class="text-stone-700 leading-relaxed">Khi đi, Tỷ-kheo biết: "Tôi đi". Khi đứng, biết: "Tôi đứng". Khi ngồi, biết: "Tôi ngồi". Khi nằm, biết: "Tôi nằm". Thân thể được sử dụng như thế nào, vị ấy biết thân thể như thế ấy. Vị ấy an trú, quán thân trên thân, nhiệt tâm, tỉnh giác, chánh niệm, nhiếp phục mọi tham ưu ở đời.</p>
+                </div>
+                <div id="method-clarity" class="method-content hidden">
+                    <h3 class="text-2xl font-bold text-orange-800 mb-4">Tỉnh Giác (Sampajañña)</h3>
+                    <p class="text-stone-700 leading-relaxed">Vị Tỷ-kheo tỉnh giác trong khi đi tới, đi lui; khi nhìn thẳng, nhìn quanh; khi co tay, duỗi tay; khi mang y, bát; khi ăn, uống, nhai, nuốt; khi đi đại tiện, tiểu tiện. Vị ấy tỉnh giác khi đi, đứng, ngồi, nằm, thức, nói, im lặng. Như vậy, vị ấy an trú quán thân trên thân.</p>
+                </div>
+                <div id="method-parts" class="method-content hidden">
+                    <h3 class="text-2xl font-bold text-orange-800 mb-4">Quán 32 Thể Trược (Paṭikkūlamanasikāra)</h3>
+                    <p class="text-stone-700 leading-relaxed">Vị ấy quán sát thân này, dưới từ bàn chân trở lên, trên cho đến đỉnh đầu, bao bọc bởi da và chứa đầy những vật bất tịnh. Trong thân này có: tóc, lông, móng, răng, da, thịt, gân, xương, tủy, thận, tim, gan, hoành cách mô, lá lách, phổi, ruột, màng ruột, dạ dày, phân, mật, đàm, mủ, máu, mồ hôi, mỡ, nước mắt, mỡ da, nước miếng, nước mũi, nước ở khớp xương, nước tiểu.</p>
+                </div>
+                <div id="method-elements" class="method-content hidden">
+                    <h3 class="text-2xl font-bold text-orange-800 mb-4">Quán Tứ Đại (Dhātumanasikāra)</h3>
+                    <p class="text-stone-700 leading-relaxed">Vị ấy quán sát thân này về các giới, dầu thân này được đặt ở đâu, dầu thân này được sử dụng thế nào: "Trong thân này có địa đại (đất), thủy đại (nước), hỏa đại (lửa), và phong đại (gió)". Như một người đồ tể thiện xảo, sau khi giết một con bò, chia từng bộ phận và ngồi ở ngã tư đường, vị Tỷ-kheo cũng quán sát thân này như sự tập hợp của bốn yếu tố chính.</p>
+                </div>
+                <div id="method-corpse" class="method-content hidden">
+                    <h3 class="text-2xl font-bold text-orange-800 mb-4">Quán Tử Thi (Sivathikā)</h3>
+                    <p class="text-stone-700 leading-relaxed">Vị Tỷ-kheo thấy một thi thể bị quăng bỏ trong nghĩa địa, một ngày, hai ngày, ba ngày, trương phồng lên, xanh xám, thối rữa. Vị ấy liên hệ đến thân mình: "Thân này của ta cũng cùng một bản chất, cũng sẽ trở thành như vậy, không thể thoát khỏi". Vị ấy lại thấy thi thể bị các loài vật ăn, chỉ còn là bộ xương, rồi xương cốt rời rạc, cuối cùng thành bột. Mỗi lần như vậy, vị ấy đều liên hệ đến thân mình để thấy rõ sự thật vô thường và từ bỏ chấp thủ.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="benefits" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center text-orange-800 mb-2">Lợi Ích & Kết Quả</h2>
+             <p class="text-center text-stone-600 max-w-3xl mx-auto mb-8">
+                Khi Thân Hành Niệm được tu tập viên mãn, nó sẽ mang lại mười công đức và quả báo to lớn. Phần này sử dụng biểu đồ và các thẻ để minh họa con đường phát triển tâm linh này, từ việc chế ngự các cảm xúc tiêu cực cho đến khi đạt được trí tuệ giải thoát hoàn toàn. Hãy di chuột qua các cột trong biểu đồ để xem chi tiết.
+            </p>
+            <div class="bg-white p-8 rounded-lg shadow-sm mb-8">
+                <div class="chart-container">
+                    <canvas id="benefitsChart"></canvas>
+                </div>
+            </div>
+             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-orange-400">
+                    <h4 class="font-bold text-lg text-orange-800">1-3. Chế ngự & Bền bỉ</h4>
+                    <p class="text-stone-600 mt-2">Chiến thắng sự bất mãn, sợ hãi. Kiên trì chịu đựng các khổ Thọ về thân như nóng, lạnh, đói, khát.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-orange-500">
+                    <h4 class="font-bold text-lg text-orange-800">4. Đạt Tứ Thiền</h4>
+                    <p class="text-stone-600 mt-2">Dễ dàng chứng và trú vào bốn tầng thiền định (Sơ thiền, Nhị thiền, Tam thiền, Tứ thiền), là nền tảng cho trí tuệ phát sinh.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-orange-600">
+                    <h4 class="font-bold text-lg text-orange-800">5-9. Năm Thượng Trí</h4>
+                    <p class="text-stone-600 mt-2">Chứng đắc các năng lực siêu phàm: Thần túc thông, Thiên nhĩ thông, Tha tâm thông, Túc mạng thông, và Thiên nhãn thông.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-orange-700">
+                    <h4 class="font-bold text-lg text-orange-800">10. Lậu Tận Thông</h4>
+                    <p class="text-stone-600 mt-2">Diệt trừ hoàn toàn các lậu hoặc (tham, sân, si), chứng đạt Tâm giải thoát, Tuệ giải thoát ngay trong hiện tại. Đây là mục tiêu cuối cùng.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="metaphors" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center text-orange-800 mb-2">So Sánh & Ẩn Dụ</h2>
+            <p class="text-center text-stone-600 max-w-3xl mx-auto mb-8">
+                Đức Phật đã dùng những hình ảnh so sánh sâu sắc để minh họa cho sức mạnh và tầm quan trọng của Thân Hành Niệm. Mỗi ẩn dụ dưới đây làm sáng tỏ một khía cạnh của pháp môn tu tập này.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h4 class="text-xl font-bold text-orange-800 mb-3"><span class="text-3xl mr-2">🌊</span> Đại Dương Vĩ Đại</h4>
+                    <p class="text-stone-700 leading-relaxed">Ví như biển cả là nơi tất cả các con sông đều đổ về, Thân Hành Niệm khi được tu tập sẽ làm cho tất cả các pháp thiện (thiện pháp) được quy tụ và phát triển trong đó.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h4 class="text-xl font-bold text-orange-800 mb-3"><span class="text-3xl mr-2">🧠</span> Tâm Được Bảo Vệ</h4>
+                    <p class="text-stone-700 leading-relaxed">Khi Thân Hành Niệm được thực hành, Ma vương (ác pháp) không có cơ hội xâm nhập, cũng như không thể ném một hòn đá khô hay ướt vào một khối đá tảng để nó vỡ ra được. Tâm trở nên vững chắc, không lay chuyển.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h4 class="text-xl font-bold text-orange-800 mb-3"><span class="text-3xl mr-2">🏺</span> Chàng Lực Sĩ & Bình Dầu</h4>
+                    <p class="text-stone-700 leading-relaxed">Ví như một người phải mang một bình đầy dầu đi giữa đám đông và một vũ nữ xinh đẹp, nếu lơ là sẽ bị chém đầu. Người đó phải tập trung cao độ vào bình dầu. Tương tự, hành giả phải chú tâm vào thân mình để đạt được sự định tĩnh và trí tuệ.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h4 class="text-xl font-bold text-orange-800 mb-3"><span class="text-3xl mr-2">🌳</span> Cây Cột Vững Chắc</h4>
+                    <p class="text-stone-700 leading-relaxed">Ví như một cây cột được chôn sâu, chắc chắn, không bị gió bão làm lay chuyển. Người tu tập Thân Hành Niệm cũng vậy, tâm an trú trên thân, không bị các pháp bên ngoài tác động, trở nên kiên cố và vững chãi.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-orange-900 text-orange-100 mt-16 py-8 text-center">
+        <p>Thân Hành Niệm là con đường đưa đến sự an tịnh, trí tuệ và giải thoát.</p>
+        <p class="text-sm opacity-75 mt-2">Ứng dụng web tương tác dựa trên Trung Bộ Kinh 119.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const methodSelector = document.getElementById('method-selector');
+            const methodContents = document.querySelectorAll('.method-content');
+            const methodCards = document.querySelectorAll('.method-card');
+
+            methodSelector.addEventListener('click', function(e) {
+                const card = e.target.closest('.method-card');
+                if (!card) return;
+
+                const targetId = card.dataset.target;
+
+                methodCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+
+                methodContents.forEach(content => {
+                    if (content.id === targetId) {
+                        content.classList.remove('hidden');
+                    } else {
+                        content.classList.add('hidden');
+                    }
+                });
+            });
+
+            const benefitsData = {
+                labels: [
+                    'Chế ngự Bất mãn', 
+                    'Chế ngự Sợ hãi', 
+                    'Nhẫn chịu Khổ thọ', 
+                    'Đắc Tứ thiền', 
+                    'Thần túc thông', 
+                    'Thiên nhĩ thông',
+                    'Tha tâm thông', 
+                    'Túc mạng thông', 
+                    'Thiên nhãn thông', 
+                    'Lậu tận thông'
+                ],
+                values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            };
+            
+            const ctx = document.getElementById('benefitsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: benefitsData.labels,
+                    datasets: [{
+                        label: 'Cấp độ Thành tựu',
+                        data: benefitsData.values,
+                        backgroundColor: [
+                            'rgba(251, 146, 60, 0.6)',
+                            'rgba(249, 115, 22, 0.6)',
+                            'rgba(234, 88, 12, 0.6)',
+                            'rgba(194, 65, 12, 0.6)',
+                            'rgba(154, 52, 18, 0.6)',
+                            'rgba(124, 45, 18, 0.7)',
+                            'rgba(124, 45, 18, 0.8)',
+                            'rgba(124, 45, 18, 0.9)',
+                            'rgba(124, 45, 18, 1)',
+                            'rgba(106, 35, 10, 1)'
+                        ],
+                        borderColor: [
+                            'rgba(251, 146, 60, 1)',
+                            'rgba(249, 115, 22, 1)',
+                            'rgba(234, 88, 12, 1)',
+                            'rgba(194, 65, 12, 1)',
+                            'rgba(154, 52, 18, 1)',
+                            'rgba(124, 45, 18, 1)',
+                            'rgba(124, 45, 18, 1)',
+                             'rgba(124, 45, 18, 1)',
+                            'rgba(124, 45, 18, 1)',
+                             'rgba(106, 35, 10, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e7e5e4'
+                            },
+                            ticks: {
+                                color: '#57534e'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            },
+                             ticks: {
+                                color: '#57534e',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#44403c',
+                            titleFont: {
+                                size: 16
+                            },
+                            bodyFont: {
+                                size: 14
+                            },
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += 'Cấp độ ' + context.parsed.x;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.4
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const navLink = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+                        navLinks.forEach(link => link.classList.remove('active'));
+                        if (navLink) {
+                            navLink.classList.add('active');
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            navLinks.forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
